@@ -2,6 +2,8 @@ import pygame
 import random
 import math
 import time
+#import { useEffect, useRef, useState } from "react";
+#import { motion, useAnimation } from "framer-motion";
 
 # --- Constant Definitions ---
 
@@ -80,6 +82,93 @@ STAMINA_BAR_COLOR = (0, 255, 0)
 INVENTORY_SELECTED = (255, 255, 255)
 INVENTORY_BG = (100, 100, 100)
 DEFAULT_INVENTORY_SLOTS = 5
+
+#idojarars:'''
+'''  ''
+export default function AnimatedScene() {
+  const [time, setTime] = useState(0); 
+  const [time, setTime] = useState(0); // 0 to 180s (3 min cycle)
+  const lastFrame = useRef(performance.now());
+  const frameCount = useRef(0);
+
+  useEffect(() => {
+    const updateFps = () => {
+      const now = performance.now();
+      frameCount.current++;
+      if (now - lastFrame.current >= 1000) {
+        setFps(frameCount.current);
+        frameCount.current = 0;
+        lastFrame.current = now;
+      }
+      requestAnimationFrame(updateFps);
+    };
+    updateFps();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime((prev) => (prev + 1) % 180);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const isDay = time < 120;
+  const isNight = time >= 120;
+  const sunX = (time / 120) * 100 - 50;
+  const moonX = ((time - 120) / 60) * 100 - 50;
+
+  return (
+    <div className="relative w-screen h-screen overflow-hidden bg-blue-500">
+      {/* FPS Counter */}
+      <div className="absolute top-2 left-2 bg-black text-white p-2 rounded">FPS: {fps}</div>
+
+      {/* Sun & Moon */}
+      {isDay && (
+        <motion.div
+          className="absolute w-20 h-20 bg-yellow-500 rounded-full"
+          animate={{ x: `${sunX}%`, y: ["-20%", "20%"] }}
+          transition={{ duration: 2, repeat: Infinity, repeatType: "mirror" }}
+        />
+      )}
+      {isNight && (
+        <motion.div
+          className="absolute w-16 h-16 bg-gray-300 rounded-full"
+          animate={{ x: `${moonX}%`, y: ["-10%", "30%"] }}
+          transition={{ duration: 2, repeat: Infinity, repeatType: "mirror" }}
+        />
+      )}
+
+      {/* Clouds */}
+      {isDay && <Clouds />}
+
+      {/* Stars & Shooting Stars */}
+      {isNight && <Stars />}
+
+      {/* Clock */}
+      <div className="absolute bottom-2 left-2 bg-black text-white p-2 rounded">
+        Time: {Math.floor(time / 60)}:{(time % 60).toString().padStart(2, "0")}
+      </div>
+    </div>
+  );
+}
+
+function Clouds() {
+  return (
+    <motion.div
+      className="absolute top-20 left-0 w-full h-10 bg-white opacity-70"
+      animate={{ x: ["-100%", "100%"] }}
+      transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+    />
+  );
+}
+
+function Stars() {
+  return (
+    <canvas className="absolute w-full h-full top-0 left-0" />
+  );
+}
+'' ''' '''
+#idojaras vege ''' 
 
 # --- Utility Functions ---
 def lerp_color(color1, color2, t):
